@@ -112,13 +112,8 @@ return {
       for server, server_opts in pairs(servers) do
         server_opts.capabilities = capabilities
         server_opts.on_attach = on_attach
-
-        if vim.lsp.config and vim.lsp.enable then
-          vim.lsp.config(server, server_opts)
-          vim.lsp.enable(server)
-        else
-          require("lspconfig")[server].setup(server_opts)
-        end
+        vim.lsp.config(server, server_opts)
+        vim.lsp.enable(server)
       end
     end,
   },
