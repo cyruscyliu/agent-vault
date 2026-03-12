@@ -8,6 +8,5 @@ vim.api.nvim_create_autocmd("VimEnter", {
     end
 
     vim.cmd.cd(arg)
-    vim.cmd("silent Lexplore")
   end,
 })
