@@ -83,7 +83,6 @@ return {
         map("<leader>ca", vim.lsp.buf.code_action, "Code action")
       end
 
-      local lspconfig = require("lspconfig")
       local servers = {
         bashls = {},
         jsonls = {},
@@ -102,7 +101,13 @@ return {
       for server, server_opts in pairs(servers) do
         server_opts.capabilities = capabilities
         server_opts.on_attach = on_attach
-        lspconfig[server].setup(server_opts)
+
+        if vim.lsp.config and vim.lsp.enable then
+          vim.lsp.config(server, server_opts)
+          vim.lsp.enable(server)
+        else
+          require("lspconfig")[server].setup(server_opts)
+        end
       end
     end,
   },
