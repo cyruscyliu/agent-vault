@@ -134,6 +134,8 @@ source "$P10K_DIR/powerlevel10k.zsh-theme"
 zstyle ':autocomplete:*' min-input 1
 zstyle ':autocomplete:*' recent-dirs yes
 
+bindkey '^F' autosuggest-accept
+
 alias vim='nvim'
 
 [[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh

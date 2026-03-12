@@ -3,10 +3,10 @@ return {
     "akinsho/toggleterm.nvim",
     version = "*",
     opts = {
-      direction = "float",
-      float_opts = {
-        border = "curved",
-      },
+      direction = "vertical",
+      size = function()
+        return math.floor(vim.o.columns * 0.35)
+      end,
     },
   },
   {
