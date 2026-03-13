@@ -54,6 +54,73 @@ check_zsh() {
   assert_file "$HOME/.p10k.zsh"
   assert_dir "$HOME/.oh-my-zsh"
   zsh -ic 'exit 0'
+
+  if command_exists python3; then
+    python3 - <<'PY'
+import os
+import pty
+import select
+import subprocess
+import sys
+import time
+
+try:
+    master_fd, slave_fd = pty.openpty()
+except OSError as exc:
+    print(f"Skipping python3 REPL prompt check: {exc}", file=sys.stderr)
+    sys.exit(0)
+
+proc = subprocess.Popen(
+    ["zsh", "-ic", "python3 -q"],
+    stdin=slave_fd,
+    stdout=slave_fd,
+    stderr=slave_fd,
+    close_fds=True,
+)
+os.close(slave_fd)
+
+output = bytearray()
+deadline = time.time() + 15
+found_prompt = False
+
+try:
+    while time.time() < deadline:
+        readable, _, _ = select.select([master_fd], [], [], 0.2)
+        if not readable:
+            continue
+
+        chunk = os.read(master_fd, 4096)
+        if not chunk:
+            break
+
+        output.extend(chunk)
+        if b">>> " in output:
+            found_prompt = True
+            break
+finally:
+    if proc.poll() is None:
+        try:
+            os.write(master_fd, b"exit()\n")
+        except OSError:
+            pass
+
+        try:
+            proc.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            proc.terminate()
+            try:
+                proc.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait(timeout=2)
+
+    os.close(master_fd)
+
+if not found_prompt:
+    sys.stderr.write(output.decode("utf-8", "replace"))
+    raise SystemExit("python3 interactive prompt was not visible under zsh")
+PY
+  fi
 }
 
 check_nvim() {
