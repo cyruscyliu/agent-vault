@@ -44,8 +44,10 @@ checks you could not run because of sandbox, package, or network limits.
 ## Commit & Pull Request Guidelines
 Recent commits use short, imperative subjects such as `Fix missing omz`
 and `Refactor Neovim layout around plugins`. Keep commit titles
-concise, capitalized, and focused on one change. Pull requests should
-include:
+concise, capitalized, and focused on one change. When a change affects
+documented behavior, installed components, workflow notes, or user
+expectations, update the `README.md` `Notes` section in the same change
+before committing. Pull requests should include:
 
 - What component changed and why.
 - Any user-visible behavior changes or new dependencies.
