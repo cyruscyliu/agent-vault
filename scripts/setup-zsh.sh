@@ -8,7 +8,6 @@ OH_MY_ZSH_DIR="${ZSH:-$HOME/.oh-my-zsh}"
 P10K_DIR="$ZSH_CUSTOM_DIR/themes/powerlevel10k"
 AUTOSUGGESTIONS_DIR="$ZSH_CUSTOM_DIR/plugins/zsh-autosuggestions"
 SYNTAX_HIGHLIGHTING_DIR="$ZSH_CUSTOM_DIR/plugins/zsh-syntax-highlighting"
-AUTOCOMPLETE_DIR="$HOME/.zsh/zsh-autocomplete"
 FONT_VERSION="v3.4.0"
 FONT_ARCHIVE="Meslo.zip"
 FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/${FONT_VERSION}/${FONT_ARCHIVE}"
@@ -191,16 +190,16 @@ plugins=(git python sudo zsh-autosuggestions zsh-syntax-highlighting)
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 [[ -r "\$ZSH/oh-my-zsh.sh" ]] && source "\$ZSH/oh-my-zsh.sh"
-[[ -r "$AUTOCOMPLETE_DIR/zsh-autocomplete.plugin.zsh" ]] && source "$AUTOCOMPLETE_DIR/zsh-autocomplete.plugin.zsh"
 
-zstyle ':autocomplete:*' min-input 1
-zstyle ':autocomplete:*' recent-dirs yes
-
-bindkey '^F' autosuggest-accept
+if [[ -o interactive ]] && [[ -t 0 ]] && [[ -t 1 ]]; then
+  bindkey '^F' autosuggest-accept
+fi
 
 alias vim='nvim'
 
-[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
+if [[ -o interactive ]] && [[ -t 0 ]] && [[ -t 1 ]]; then
+  [[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
+fi
 EOF
 }
 
@@ -262,7 +261,6 @@ main() {
   clone_or_update_repo https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
   clone_or_update_repo https://github.com/zsh-users/zsh-autosuggestions.git "$AUTOSUGGESTIONS_DIR"
   clone_or_update_repo https://github.com/zsh-users/zsh-syntax-highlighting.git "$SYNTAX_HIGHLIGHTING_DIR"
-  clone_or_update_repo https://github.com/marlonrichert/zsh-autocomplete.git "$AUTOCOMPLETE_DIR"
 
   write_zshrc
   write_zshenv

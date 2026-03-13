@@ -6,6 +6,7 @@ SCRIPT_NAME="$(basename "$0")"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_CONFIG_DIR="$REPO_ROOT/config/alacritty"
 TARGET_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
+CONFIG_FILE="alacritty.toml"
 
 log() {
   printf '[%s] %s\n' "$SCRIPT_NAME" "$*"
@@ -47,8 +48,55 @@ install_packages() {
   esac
 }
 
+compute_font_size() {
+  local height
+
+  if [[ -n "${GEEK_ENV_ALACRITTY_FONT_SIZE:-}" ]]; then
+    printf '%s\n' "$GEEK_ENV_ALACRITTY_FONT_SIZE"
+    return
+  fi
+
+  height="$(detect_display_height || true)"
+
+  case "$height" in
+    ''|*[!0-9]*)
+      printf '11.5\n'
+      ;;
+    *)
+      if (( height >= 2160 )); then
+        printf '14.0\n'
+      elif (( height >= 1800 )); then
+        printf '13.0\n'
+      elif (( height >= 1440 )); then
+        printf '12.0\n'
+      elif (( height >= 1200 )); then
+        printf '11.5\n'
+      else
+        printf '11.0\n'
+      fi
+      ;;
+  esac
+}
+
+detect_display_height() {
+  local resolution
+
+  [[ -n "${DISPLAY:-}" ]] || return 1
+  command_exists xrandr || return 1
+
+  resolution="$(xrandr --current 2>/dev/null | awk '/\*/ { print $1; exit }')"
+  [[ -n "$resolution" ]] || return 1
+
+  printf '%s\n' "${resolution##*x}"
+}
+
 install_config() {
+  local font_size source_file target_file
+
   [[ -d "$SOURCE_CONFIG_DIR" ]] || fail "Missing Alacritty config at $SOURCE_CONFIG_DIR"
+  source_file="$SOURCE_CONFIG_DIR/$CONFIG_FILE"
+  target_file="$TARGET_CONFIG_DIR/$CONFIG_FILE"
+  [[ -f "$source_file" ]] || fail "Missing Alacritty config file at $source_file"
 
   if [[ -d "$TARGET_CONFIG_DIR" && ! -d "${TARGET_CONFIG_DIR}.pre-geek-env" ]]; then
     cp -R "$TARGET_CONFIG_DIR" "${TARGET_CONFIG_DIR}.pre-geek-env"
@@ -56,8 +104,10 @@ install_config() {
   fi
 
   rm -rf "$TARGET_CONFIG_DIR"
-  cp -R "$SOURCE_CONFIG_DIR" "$TARGET_CONFIG_DIR"
-  log "Installed Alacritty config into $TARGET_CONFIG_DIR"
+  mkdir -p "$TARGET_CONFIG_DIR"
+  font_size="$(compute_font_size)"
+  sed "s/__GEEK_ENV_ALACRITTY_FONT_SIZE__/${font_size}/g" "$source_file" >"$target_file"
+  log "Installed Alacritty config into $TARGET_CONFIG_DIR with font size $font_size"
 }
 
 main() {
