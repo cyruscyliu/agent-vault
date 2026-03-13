@@ -51,6 +51,7 @@ Available components:
 - On startup, Neovim opens a VS Code style layout managed by `neo-tree` and `edgy.nvim`: explorer on the left, editor in the middle, shell below, and Codex on the right.
 - Codex file opens are routed back into the main Neovim session using Neovim remote editing.
 - The UI uses a VS Code themed colorscheme, top buffer tabs, and plugin-managed breadcrumbs.
+- Tree-sitter is loaded eagerly at startup, and the config falls back to direct parser setup if `nvim-treesitter.configs` is unavailable.
 - The managed `zsh` config exports `EDITOR=nvim`, `VISUAL=nvim`, and aliases `vim` to `nvim`.
 - Keymaps: `<leader>e` toggles the file tree, `<leader>aa` toggles the Codex panel, `<leader>an` opens a new Codex panel, `<leader>at` toggles the shell panel, and `<leader>aT` opens a new shell panel.
 - Diagnostics and symbols: `<leader>xx` toggles the diagnostics panel, `<leader>xX` toggles diagnostics for the current buffer, `<leader>cs` toggles the symbols panel, and `<leader>cl` toggles the LSP locations panel.
