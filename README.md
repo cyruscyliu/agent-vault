@@ -40,12 +40,38 @@ Available components:
 - `i3`
 - `zram`
 
+## Docker test
+
+Use the Docker harness for a repeatable full-toolkit integration run:
+
+```bash
+./scripts/test-toolkit.sh
+```
+
+This builds a disposable Debian container, runs `./install.sh` twice as a
+normal user with passwordless `sudo`, and verifies the installed state for
+`zsh`, `nvim`, `tmux`, `alacritty`, `i3`, and container-safe `zram`
+configuration output.
+
+## Smoke test
+
+Use the smoke suite after an install or update pass:
+
+```bash
+./scripts/smoke-test.sh
+```
+
+It checks that the configured toolkit starts cleanly enough to catch obvious
+breakage: interactive `zsh`, headless `nvim`, `tmux`, `i3` config validation,
+Alacritty config parsing, and installed `zram` configuration.
+
 ## Notes
 
 - Most setup steps use `sudo` for packages and system config.
 - Existing user configs are backed up before replacement.
 - Re-running `./install.sh` works as an update pass.
 - Git-based tools are pulled forward and repo configs are re-applied.
+- The `zsh` installer skips the Meslo Nerd Font download when it is already installed.
 - The managed Neovim config is symlinked into `~/.config/nvim`, so repo edits show up there immediately.
 - Neovim Codex integration assumes `codex` is already on your `PATH`.
 - Use `nvim .` for the bundled editor setup. Plain `vim .` will not load the Neovim Codex integration.

@@ -64,8 +64,33 @@ install_packages() {
   esac
 }
 
+meslo_nerd_font_installed() {
+  local fonts_dir
+
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    fonts_dir="$HOME/Library/Fonts"
+  else
+    fonts_dir="$HOME/.local/share/fonts"
+  fi
+
+  if [[ -d "$fonts_dir" ]] && find "$fonts_dir" -maxdepth 1 -type f \( -iname '*Meslo*Nerd*' -o -iname '*Meslo*NF*' \) -print -quit | grep -q .; then
+    return 0
+  fi
+
+  if command_exists fc-list && fc-list | grep -qi 'Meslo.*Nerd'; then
+    return 0
+  fi
+
+  return 1
+}
+
 install_font() {
   local fonts_dir archive_path
+
+  if meslo_nerd_font_installed; then
+    log "Meslo Nerd Font already installed; skipping download"
+    return
+  fi
 
   if [[ "$(uname -s)" == "Darwin" ]]; then
     fonts_dir="$HOME/Library/Fonts"
@@ -226,6 +251,11 @@ set_default_shell() {
   local zsh_path current_shell
   zsh_path="$(command -v zsh)"
   current_shell="${SHELL:-}"
+
+  if [[ "${GEEK_ENV_TEST_MODE:-0}" == "1" ]]; then
+    log "Test mode enabled; skipping login shell change"
+    return
+  fi
 
   if [[ "$current_shell" == "$zsh_path" ]]; then
     log "Default shell is already $zsh_path"

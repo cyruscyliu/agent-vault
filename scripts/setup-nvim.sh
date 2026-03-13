@@ -88,7 +88,6 @@ install_local_nvim() {
   local tmp_dir
 
   tmp_dir="$(mktemp -d)"
-  trap 'rm -rf "$tmp_dir"' RETURN
 
   mkdir -p "$LOCAL_BIN_DIR" "$LOCAL_OPT_DIR"
   log "Installing Neovim into $LOCAL_NVIM_ROOT"
@@ -97,6 +96,7 @@ install_local_nvim() {
   rm -rf "$LOCAL_NVIM_ROOT"
   cp -R "$tmp_dir"/nvim-linux-x86_64 "$LOCAL_NVIM_ROOT"
   ln -sfn "$LOCAL_NVIM_ROOT/bin/nvim" "$LOCAL_NVIM_BIN"
+  rm -rf "$tmp_dir"
 }
 
 ensure_supported_nvim() {
@@ -152,7 +152,8 @@ install_config() {
 bootstrap_lazy() {
   if [[ -d "$LAZY_DIR/.git" ]]; then
     log "Updating lazy.nvim"
-    git -C "$LAZY_DIR" pull --ff-only
+    git -C "$LAZY_DIR" fetch --depth=1 origin stable
+    git -C "$LAZY_DIR" checkout -B stable FETCH_HEAD
     return
   fi
 
