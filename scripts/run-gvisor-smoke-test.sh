@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# run-kata-smoke-test.sh
-# Validate that the kata-qemu RuntimeClass can start and complete a simple pod
+# run-gvisor-smoke-test.sh
+# Validate that the gvisor RuntimeClass can start and complete a simple pod
 
 set -euo pipefail
 
 SCRIPT_NAME="$(basename "$0")"
-POD_NAME="${KATA_SMOKE_POD_NAME:-kata-smoke-test}"
-RUNTIME_CLASS="${KATA_SMOKE_RUNTIME_CLASS:-kata-qemu}"
-IMAGE="${KATA_SMOKE_IMAGE:-busybox}"
-EXPECTED_OUTPUT="${KATA_SMOKE_EXPECTED_OUTPUT:-kata works}"
+POD_NAME="${GVISOR_SMOKE_POD_NAME:-gvisor-smoke-test}"
+RUNTIME_CLASS="${GVISOR_SMOKE_RUNTIME_CLASS:-gvisor}"
+IMAGE="${GVISOR_SMOKE_IMAGE:-busybox}"
+EXPECTED_OUTPUT="${GVISOR_SMOKE_EXPECTED_OUTPUT:-gvisor works}"
 
 log() {
   printf '[%s] %s\n' "$SCRIPT_NAME" "$*"
